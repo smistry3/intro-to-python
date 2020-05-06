@@ -1,0 +1,47 @@
+# Write code that simulates rolling two dice, each with 20 sides.
+# Simulation 1: Use that code to estimate the probability that the sum of those two dice is exactly 36. 
+# Simulation 2: Use that code to estimate the probability that the bigger value is greater than 18. Perform at least 1000 trials.
+
+import random
+def sim1():
+  trials = 1000000
+  truect = 0
+  falsect = 0
+  for i in range(trials):
+    dice1 = random.randint(1,20)
+    dice2 = random.randint(1,20)
+    if dice1 + dice2 == 36:
+      truect += 1
+    else: 
+      falsect += 1
+  return "The probability that the two dice roll exactly 36 is " + str(truect/trials) + " and there is a probability of " + str(falsect/trials) + " that the dice will not roll exactly a 36." 
+sim1()
+
+def sim2():
+  trials = 150000
+  truect = 0
+  falsect = 0
+  for i in range(trials):
+    dice1 = random.randint(1,20)
+    dice2 = random.randint(1,20)
+    #print(dice1)
+    #print(dice2)
+    if dice1 > dice2:
+      if dice1 > 18:
+        truect += 1
+      else:
+        falsect += 1
+    elif dice2 > dice1:
+      if dice2 > 18:
+        truect += 1
+      else:
+        falsect += 1
+    elif dice1 == dice2:
+      if dice1 == 18:
+        truect += 1
+      else:
+        falsect += 1
+  #print(truect)
+  #print(falsect)
+  return "The probability that the bigger value of the dice is greater than 18 is " + str(truect/trials) + " and the probability that the bigger value is less than 18 is " + str(falsect/trials)
+sim2()
