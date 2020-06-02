@@ -1,0 +1,394 @@
+# Intro to Python Final Project
+from tkinter import *
+import random
+class Card:
+    def __init__(self, suit, face):
+        self.suit = suit
+        self.face = face
+
+    def __str__(self):
+        return "{} of {}s".format(self.face, self.suit)
+
+    def getFace(self):
+        return self.face
+
+    def getSuit(self):
+        return self.suit
+
+    def getValue(self):
+        valueDict = {"A": 1, "J": 10, "Q": 10, "K": 10}
+        if self.face in valueDict:
+            return valueDict[self.face]
+        else:
+            return self.face
+
+
+class CardStack:
+    def __init__(self):
+        self.cards = []
+
+    def shuffle(self):
+        random.shuffle(self.cards)
+
+    def card_convert(self):
+        for b in self.cards:
+            full_deck.append(b[0])
+        return full_deck
+
+    def distribute(self, stack1, stack2):
+        for i in range(self.length() // 2):
+            deal1 = self.deal()
+            stack1.addCard(deal1)
+            deal2 = self.deal()
+            stack2.addCard(deal2)
+
+    def addCard(self, card):
+        self.cards.append(card)
+
+    def deal(self):
+        return self.cards.pop()
+
+    def join(self, otherStack):
+        self.cards = self.cards + otherStack.cards
+
+    def length(self):
+        return len(self.cards)
+
+    def bar(self):
+        string = ""
+        for i in range(self.length()):
+            string += "|"
+        return string
+
+    def __str__(self):
+        stringToPrint = ""
+        for card in self.cards:
+            stringToPrint += str(card) + "\n"
+        return stringToPrint
+
+
+class Deck(CardStack):
+    # Gets all methods from CardStack
+    # DRY - Inheritance use methods over and Over
+    def __init__(self):
+        self.cards = []
+        suits = ["Club", "Diamond", "Heart", "Spade"]
+        values = ["Ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King"]
+        for suit in suits:
+            for value in values:
+                self.cards.append(Card(suit, value))
+
+
+gameDeck = Deck()
+gameDeck.shuffle()
+playerDeck = []
+dealerDeck = []
+playerKeys = []
+dealerKeys = []
+player_tot = 0
+dealer_tot = 0
+final_player_tot =0
+
+valueDict = {"J": 10, "Q": 10, "K": 10}
+valueDict2 = {"Jack": 10, "Queen": 10, "King": 10}
+#If card is an jack, queen, and king. This shows the value.
+global e
+
+def button_Play():
+  #Destroys the play button so you cannot press it again
+  global buttonPlay
+  try:
+    buttonPlay.destroy()
+  except:
+    buttonPlay = Button(root, width=20, borderwidth=4, text="Play", command=hit_or_stay)
+    buttonPlay.grid(row=5, column=2, padx=10, pady=10)
+
+
+def your_Total(player_Tot):
+  #Prints out player's total
+  global entryThing
+  num = player_Tot
+  greeting = "Your total is " + str(num)
+  try:
+    entryThing.forget_grid()
+  except:
+    entryThing = Button(root, text=greeting)
+    entryThing.grid(row=2, column=2, padx=10, pady=10)
+
+
+def dealer_Total(dealer_tot):
+  #Prints out dealer's total
+  global dealerEntry
+  global dealerPreview
+  num = dealer_tot
+  greeting = "Dealer total is " + str(num)
+  try:
+    dealerPreview.forget_grid()
+    dealerEntry.forget_grid()
+  except:
+    dealerEntry = Button(root, text=greeting)
+    dealerEntry.grid(row=1, column=2, padx=10, pady=10)
+
+
+def preview_Dealer(dealer_Preview):
+  #Prints out one of the dealer's cards
+  global dealerPreview
+  num = dealer_Preview
+  greeting = "One of the dealer's cards is " + str(num)
+  try:
+    dealerPreview.forget_grid()
+  except:
+    dealerPreview = Button(root, text=greeting)
+    dealerPreview.grid(row=0, column=2, padx=10, pady=10)
+
+
+def print_Compare(printCom):
+  #Prints out the compare result
+  global printCompare
+  num = printCom
+  greeting = str(num)
+  try:
+    printCompare.forget_grid()
+  except:
+    printCompare = Button(root, text=greeting)
+    printCompare.grid(row=3, column=4, padx=10, pady=10)
+
+
+def print_Dealer(dealer):
+  #Print out comments that are from the dealer function
+  global printDealer
+  num = dealer
+  greeting = str(num)
+  try:
+    printDealer.forget_grid()
+  except:
+    printDealer = Button(root, text=greeting)
+    printDealer.grid(row=1, column=4, padx=10, pady=10)
+
+
+def print_Player(player):
+  #Print out comments that are from the hit function
+  global printPlayer
+  num = player
+  greeting = str(num)
+  try:
+      printPlayer.forget_grid()
+  except:
+    printPlayer = Button(root, text=greeting)
+    printPlayer.grid(row=2, column=4, padx=10, pady=10)
+
+
+def print_Remainder(remainder):
+  #Used when a dealer has to do a different course of action
+  #So they have to stay when their number is high or not. Its tells the player
+  global printRemainder
+  num = remainder
+  greeting = str(num)
+  try:
+    printRemainder.forget_grid()
+  except:
+    printRemainder = Button(root, text=greeting)
+    printRemainder.grid(row=0, column=4, padx=10, pady=10)
+
+
+def hit(): 
+  #Function was created to deal the player a card and add it to the total. This occurs when you press the hit button.
+  global final_player_tot
+  valueDict2 = {"Jack": 10, "Queen": 10, "King": 10}
+  valueDict = {"J": 10, "Q": 10, "K": 10}
+  hitorstayNUM = "hit"
+  playerDeck.append("{}".format(gameDeck.deal()))
+  player_tot = 0
+  for s in playerDeck:
+      splitS = s.split(" ")
+      playerKeys.append(splitS[0])
+  print(playerDeck)
+  for t in playerKeys:
+      if t in valueDict:
+          player_tot += valueDict[t]
+      #This takes an Ace and depending on the total value of the cards it will add 11 or 1 to the value.
+      elif (t == "A" or t == "Ace"):
+          if player_tot < 11:
+              valueDict["A"] = 11
+              valueDict2["Ace"] = 11
+              player_tot += 11
+          else:
+              valueDict["A"] = 1
+              valueDict2["Ace"] = 1
+              player_tot += 1
+      elif t in valueDict:
+          player_tot += valueDict[t]
+      elif t in valueDict2:
+          player_tot += valueDict2[t]
+      else:
+          player_tot += int(t)
+  for index in range(len(playerDeck)):
+      gif1 = PhotoImage(file=str(playerDeck[index]) + ".gif")
+      label = Label(image=gif1)
+      label.image = gif1  # keep a reference!
+      label.grid(row=11, column=7 + index)
+      index += 2
+  final_player_tot += player_tot
+  if (player_tot > 21):
+      print_Player("You busted! The dealer automatically wins.")
+  elif (player_tot == 21):
+      print_Player("You win! Blackjack!")
+      dealer()
+  your_Total(final_player_tot)
+  playerKeys.clear()
+def dealer():
+  #dealer was created to do the dealer portion of the code. It occurs when you click the stay button
+  global dealer_tot
+  global dealerDeck
+  global dealerKeys
+  global gameDeck
+  global valueDict2
+  global player_tot
+  global final_player_tot
+  if(final_player_tot == 0):
+      final_player_tot = player_tot
+  print("The dealer's hand is ", dealerDeck)
+  for f in dealerDeck:
+      splitF = f.split(" ")
+      dealerKeys.append(splitF[0])
+  dealer_tot = 0
+  for g in dealerKeys:
+      if g in valueDict:
+          dealer_tot += valueDict[g]
+      elif g in valueDict2:
+          dealer_tot += valueDict2[g]
+      elif (g == "A"):
+          if dealer_tot < 11:
+              valueDict["A"] = 11
+              dealer_tot += 11
+          else:
+              valueDict2["A"] = 1
+              dealer_tot += 1
+      elif g == "Ace":
+          if dealer_tot < 11:
+              valueDict2["Ace"] = 11
+              dealer_tot += 11
+          else:
+              valueDict2["Ace"] = 1
+              dealer_tot += 1
+      else:
+          dealer_tot += int(g)
+  e = 0
+  while (e < 1):
+      dealer_Total(dealer_tot)
+      if (dealer_tot < 21):
+          if (dealer_tot <= 16):
+              print_Remainder("Because the total is less than or \n equal to 16, the dealer must hit")
+              dealerDeck.append("{}".format(gameDeck.deal()))
+              print(dealerDeck)
+              i = dealerDeck[-1].split()
+              if (i[0] in valueDict2):
+                  dealer_tot += valueDict2[i[0]]
+              elif (i[0] == "Ace"):
+                  if (dealer_tot <= 10):
+                      valueDict2["Ace"] = 11
+                      dealer_tot += valueDict2["Ace"]
+                  else:
+                      valueDict2["Ace"] = 1
+                      dealer_tot += valueDict2["Ace"]
+              else:
+                  dealer_tot += int(i[0])
+          elif (dealer_tot > 16):
+              print_Remainder("Because the total is greater than 16,\n the dealer must stay.")
+              break
+      elif (dealer_tot == 21):
+          print_Dealer("The dealer won! Blackjack!")
+          break
+      else:
+          print_Dealer("The dealer busted and went over 21!")
+          break
+  for index in range(len(dealerDeck)):
+      gif1 = PhotoImage(file=str(dealerDeck[index]) + ".gif")
+      label = Label(image=gif1)
+      label.image = gif1  # keep a reference!
+      label.grid(row=15, column=10 + index)
+      index += 2
+  compare()
+    
+def compare():
+  #compares the final_player_tot and dealer_tot
+  global player_tot
+  global final_player_tot
+  if (final_player_tot > 21):
+      print_Compare("The dealer automatically wins.")
+  elif (dealer_tot > 21 and final_player_tot < 21):
+      print_Compare("The player automatically wins.")
+  elif (final_player_tot > dealer_tot and final_player_tot < 21):
+      print_Compare("The player is closest to 21. \n They win.")
+  elif (dealer_tot > final_player_tot and dealer_tot < 21):
+      print_Compare("The dealer is closest to 21. \n They win.")
+  elif (dealer_tot == final_player_tot):
+      print_Compare("It is a tie.")
+    
+def hit_or_stay():
+  #Gives the player the choice to hit or stay. The buttons contain functions hit and stay respectively
+  global playerDeck
+  global player_tot
+  global dealerDeck
+  global gameDeck
+  global playerKeys
+  global buttonPlay
+  button_Play()
+  for a in range(2):  # dealing initial hands
+      playerDeck.append("{}".format(gameDeck.deal()))
+      dealerDeck.append("{}".format(gameDeck.deal()))
+  print("Your hand is " + str(playerDeck))
+  for index in range(len(playerDeck)):
+    gif1 = PhotoImage(file=str(playerDeck[index]) + ".gif")
+    label = Label(image=gif1)
+    label.image = gif1  # keep a reference!
+    label.grid(row=11, column=10 + index)
+  for b in playerDeck: 
+      splitB = b.split(" ")
+      playerKeys.append(splitB[0])
+  player_tot = 0
+  for w in playerKeys:
+      if w in valueDict:
+          player_tot += valueDict[w]
+      elif w in valueDict2:
+          player_tot += valueDict2[w]
+      elif (w == "A" or w == "Ace"):
+          if player_tot < 11:
+              valueDict["A"] = 11
+              valueDict2["Ace"] = 11
+              player_tot += 11
+          else:
+              valueDict["A"] = 1
+              valueDict2["Ace"] = 1
+              player_tot += 1
+      else:
+          player_tot += int(w)
+  for index in range(len(playerDeck)):
+    #Inserts image of card
+    gif1 = PhotoImage(file=str(playerDeck[index]) + ".gif")
+    label = Label(image=gif1)
+    label.image = gif1  # keep a reference!
+    label.grid(row=11, column=10 + index)
+    index += 2
+  if (player_tot == 21):
+    print_Player("You win! Blackjack!")
+    dealer()
+  preview_Dealer(dealerDeck[0])
+  your_Total(player_tot)
+  playerDeck.clear()
+  buttonHit = Button(root, text="Hit", command=hit)
+  buttonHit.grid(row=5, column=1, padx=10, pady=10)
+  #Button hit goes to hit function
+  buttonStay = Button(root, text="Stay", command=dealer)
+  buttonStay.grid(row=5, column=3, padx=10, pady=10)
+  #Button stay goes to stay function
+  
+
+
+root = Tk()
+root.title("Blackjack")
+
+buttonPlay = Button(root, width=20, borderwidth=4, text="Play", command=hit_or_stay)
+buttonPlay.grid(row=5, column=2, padx=10, pady=10)
+#Button Play allows us to play. It goes to the function hit_or_stay
+root.mainloop()
